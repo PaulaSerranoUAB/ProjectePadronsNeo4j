@@ -1,0 +1,11 @@
+CREATE CONSTRAINT UniqueIndividuId ON (i:Individu)
+ASSERT i.Id IS UNIQUE;
+
+CREATE CONSTRAINT UniqueHabitatgePerAnyConstraint
+ON (h:Habitage) ASSERT (h.Id_Llar, h.Any_Padro) IS NODE KEY;
+
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTfU6oJBZhmhzzkV_0-avABPzHTdXy8851ySDbn2gq32WwaNmYxfiBtCGJGOZsMgCWjzlEGX4Zh1wqe/pub?output=csv' as Individual
+WITH toInteger(Individual.Year) AS Year, toInteger(Individual.Id) AS Id, Individual.second_surname as second_surname, Individual.surname as surname, Individual.name as name
+MERGE (i:Individu {Id: Id})
+  SET i.name = name, i.surname = surname, i.second_surname = second_surname, i.Year = Year
+RETURN(count(i));
