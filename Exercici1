@@ -9,3 +9,16 @@ WITH toInteger(Individual.Year) AS Year, toInteger(Individual.Id) AS Id, Individ
 MERGE (i:Individu {Id: Id})
   SET i.name = name, i.surname = surname, i.second_surname = second_surname, i.Year = Year
 RETURN(count(i));
+
+
+LOAD CSV WITH HEADERS FROM "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0ZhR6BSO_M72JEmxXKs6GLuOwxm_Oy-0UruLJeX8_R04KAcICuvrwn2OENQhtuvddU5RSJSclHRJf/pub?output=csv" as Habitatges
+WITH toInteger(Habitatges.Id_Llar) AS Id_Llar, toInteger(Habitatges.Any_Padro) AS Any_Padro, toInteger(Habitatges.Numero) AS Numero, Habitatges.Municipi as Municipi, Habitatges.Carrer as Carrer
+MERGE (h:Habitage {Id_Llar:Id_Llar, Any_Padro:Any_Padro})
+  SET h.Numero = Numero, h.Municipi = Municipi, h.Carrer = Carrer
+RETURN(count(h));
+
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRM4DPeqFmv7w6kLH5msNk6_Hdh1wuExRirgysZKO_Q70L21MKBkDISIyjvdm8shVixl5Tcw_5zCfdg/pub?output=csv' AS VIU 
+WITH toInteger(VIU.IND) AS IND, toInteger(VIU.Year) AS Year, toInteger(VIU.HOUSE_ID) AS HOUSE_ID, VIU.Location as Location
+MATCH (i:Individu {Id:IND, Year:Year})
+MATCH (h:Habitage{Id_Llar:HOUSE_ID, Any_Padro:Year, Municipi:Location})
+MERGE (i)-[rel:VIU]->(h);
