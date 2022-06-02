@@ -22,3 +22,9 @@ WITH toInteger(VIU.IND) AS IND, toInteger(VIU.Year) AS Year, toInteger(VIU.HOUSE
 MATCH (i:Individu {Id:IND, Year:Year})
 MATCH (h:Habitage{Id_Llar:HOUSE_ID, Any_Padro:Year, Municipi:Location})
 MERGE (i)-[rel:VIU]->(h);
+
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgC8TBmdXhjUOPKJxyiZSpetPYjaRC34gmxHj6H2AWvXTGbg7MLKVdJnwuh5bIeer7WLUi0OigI6wc/pub?output=csv' AS SAME_AS
+WITH toInteger(SAME_AS.Id_A) AS Id_A, toInteger(SAME_AS.Id_B) AS Id_B
+MATCH (iA:Individu {Id:Id_A})
+MATCH (iB:Individu {Id:Id_B})
+MERGE (iA)-[rel:SAME_AS]-(iB);
