@@ -1,0 +1,9 @@
+MATCH (h1:Habitatge),(h2:Habitatge)
+WHERE h1.Carrer = h2.Carrer AND h1.Municipi = h2.Municipi AND h1.Numero = h2.Numero AND h1.Id_Llar <> h2.Id_Llar AND h1.Any_Padro> h2.Any_Padro
+MERGE (h1)-[rel:MATEIX_HAB]->(h2)
+RETURN rel, h1, h2
+
+CALL gds.graph.create('subgraph_mateix_habitatge',["Habitatge","Individu"],["VIU","MATEIX_HAB","FAMILIA"])
+
+CALL gds.nodeSimilarity.mutate('subgraph_mateix_habitatge',{mutateRelationshipType:"SIMILAR",mutateProperty:"score"})
+YIELD nodesCompared, relationshipsWritten
