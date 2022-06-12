@@ -54,3 +54,20 @@ RETURN c.name,c.surname,c.second_surname, count(DISTINCT f.name)
 ORDER BY count(DISTINCT f.name) DESC
 LIMIT 20
 
+
+9. Mitja de fills a Sant Feliu del Llobregat l’any 1881 per família. Mostreu el total de fills, el nombre d’habitatges i la mitja.
+ 
+MATCH (i:Individu)<-[rel:FAMILIA]-(:Individu)-[:VIU]->(:Habitage{Municipi:"SFLL",Any_Padro:1881}), (h:Habitage{Municipi:"SFLL",Any_Padro:1881})
+WHERE rel.Relacio_Harmonitzada = "filla" OR rel.Relacio_Harmonitzada = "fill"
+RETURN count(distinct i.Id),count(distinct h.Id_Llar),count(distinct i.Id)/count(distinct h.Id_Llar)
+
+
+10. Per cada any que hi ha a la base de dades, quin és el carrer amb menys habitants de Sant Feliu de Llobregat?
+ 
+MATCH (i: Individu)-[:VIU]->(h:Habitage {Municipi: "SFLL"}) 
+WITH h.Any_Padro as Any_Padro, h.Carrer as Carrer, count(i) as individus_carrer 
+ORDER BY individus_carrer 
+WITH Any_Padro, collect(Carrer) as llista_carrer, collect(individus_carrer) as llista_individus_carrer 
+return Any_Padro, llista_carrer[0], llista_individus_carrer[0] 
+ORDER BY Any_Padro
+
