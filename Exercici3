@@ -1,3 +1,23 @@
+CALL gds.wcc.stream('3a')
+YIELD componentId, nodeId
+WITH componentId, collect(nodeId) AS nodes, size(collect(nodeId)) AS mida
+ORDER BY mida DESC
+LIMIT 3
+MATCH (c:Individu)-[:FAMILIA]->(c:Individu)-[rel:FAMILIA]->(f:Individu)-[:VIU]->(h:Habitage)
+WHERE rel.Relacio_Harmonitzada = "filla" OR rel.Relacio_Harmonitzada = "fill"
+WITH h.Any_Padro AS Any_Padro, c.Id AS Cap , count(DISTINCT f.name) AS Fills_rel
+ORDER BY Fills_rel DESC
+WITH Any_Padro, collect(Fills_rel) as llista_fills
+RETURN Any_Padro, llista_fills[0] AS Fills
+ORDER BY Any_Padro
+
+
+
+
+
+
+
+
 MATCH (h1:Habitatge),(h2:Habitatge)
 WHERE h1.Carrer = h2.Carrer AND h1.Municipi = h2.Municipi AND h1.Numero = h2.Numero AND h1.Id_Llar <> h2.Id_Llar AND h1.Any_Padro> h2.Any_Padro
 MERGE (h1)-[rel:MATEIX_HAB]->(h2)
