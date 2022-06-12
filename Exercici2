@@ -13,3 +13,16 @@ MATCH (h:Habitage{Municipi:"SFLL"})
 WHERE h.Any_Padro < 1840
 RETURN h.Municipi,h.Any_Padro,collect(DISTINCT h.Id_Llar)
 ORDER BY h.Any_Padro
+
+
+4. Retorna totes les aparicions de "Miguel ballester". Fes servir la relació SAME_AS per poder retornar totes les instancies, independentment de si hi ha variacions lèxiques (ex. diferents formes d'escriure el seu nom/cognoms). Mostra la informació en forma de subgraf.
+
+MATCH (i:Individu)-[s:SAME_AS]->(p:Individu)
+WHERE toLower(i.name) CONTAINS 'miguel' AND toLower(i.surname) CONTAINS 'ballester' 
+RETURN i,s,p
+
+5. Mostra totes les persones relacionades amb "antonio farran". Mostra la informació en forma de taula: el nom, cognom1, cognom2, i tipus de relació.
+MATCH (p:Individu)-[f:FAMILIA]-(a:Individu)
+WHERE toLower(a.name) = 'antonio' AND toLower(a.surname) = 'farran'
+RETURN p.name AS Nom, p.surname AS Cognom1, p.second_surname AS Cognom2, f.Relacio AS Relacio
+
