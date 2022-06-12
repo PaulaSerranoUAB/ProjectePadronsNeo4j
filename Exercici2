@@ -1,1 +1,15 @@
+Exercici 2. Resoleu les següents consultes:
+1. Dels padró de 1866 de Castellví de Rosanes (CR), retorna el número d'habitants i la
+llista de noms. Elimina duplicats i nan.
 
+MATCH (i:Individu)-[:VIU]->(h:Habitage{Municipi:"CR",Any_Padro:1866})
+RETURN count(i),collect(DISTINCT i.name)
+
+2. Dels padrons de Sant Feliu de Llobregat (SFLL) d'abans de l'any 1840 (no inclòs),
+retorna la població, l'any del padró i la llista d'identificadors dels habitatges de cada
+padró. Ordena els resultats per l'any de padró.
+
+MATCH (h:Habitage{Municipi:"SFLL"})
+WHERE h.Any_Padro < 1840
+RETURN h.Municipi,h.Any_Padro,collect(DISTINCT h.Id_Llar)
+ORDER BY h.Any_Padro
