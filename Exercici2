@@ -33,3 +33,24 @@ MATCH (p:Individu)-[rel]-(a:Individu)
 WHERE toLower(a.name) = 'antonio' AND toLower(a.surname) = 'farran'
 RETURN p.name AS Nom, p.surname AS Cognom1, p.second_surname AS Cognom2, type(rel) as tipus
 
+6. Llisteu totes les relacions familiars que hi ha.  
+
+MATCH (:Individu)-[r:FAMILIA]->(:Individu)
+RETURN collect(DISTINCT r.Relacio) AS Relacions_Familiars
+
+7. Identifiqueu els nodes que representen el mateix habitatge (carrer i número) al llarg dels anys de Sant Feliu del Llobregat (SFLL). Mostreu el resultat dels habitatges que tingueu totes dues informacions (carrer i número), el nombre total d’habitatges, el llistat d’anys dels padrons i el llistat de les Ids de les llars. Ordeneu de més a menys segons el total d’habitatges i mostreu-ne els 10 primers.
+
+MATCH (h:Habitage{Municipi:"SFLL"}) 
+WHERE h.Numero is not null and h.Carrer is not null
+RETURN h.Carrer, h.Numero, count(DISTINCT h.Any_Padro), collect(DISTINCT h.Id_Llar)
+ORDER BY count(DISTINCT h.Any_Padro) DESC
+LIMIT 10
+
+8. Mostreu les famílies de Castellví de Rosanes amb més de 3 fills. Mostreu el nom i cognoms del cap de família i el nombre de fills. Ordeneu-les pel nombre de fills fins a un límit de 20, de més a menys.
+
+MATCH (c:Individu)-[:FAMILIA]->(c:Individu)-[rel:FAMILIA]->(f:Individu)-[:VIU]->(:Habitage{Municipi:"CR"})
+WHERE rel.Relacio_Harmonitzada = "filla" OR rel.Relacio_Harmonitzada = "fill"
+RETURN c.name,c.surname,c.second_surname, count(DISTINCT f.name)
+ORDER BY count(DISTINCT f.name) DESC
+LIMIT 20
+
