@@ -28,3 +28,9 @@ WITH toInteger(SAME_AS.Id_A) AS Id_A, toInteger(SAME_AS.Id_B) AS Id_B
 MATCH (iA:Individu {Id:Id_A})
 MATCH (iB:Individu {Id:Id_B})
 MERGE (iA)-[rel:SAME_AS]-(iB);
+
+LOAD CSV WITH HEADERS FROM 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRVOoMAMoxHiGboTjCIHo2yT30CCWgVHgocGnVJxiCTgyurtmqCfAFahHajobVzwXFLwhqajz1fqA8d/pub?output=csv' AS Familia 
+WITH toInteger(Familia.ID_1) AS ID_1, toInteger(Familia.ID_2) AS ID_2, Familia.Relacio as Relacio, Familia.Relacio_Harmonitzada as Relacio_Harmonitzada
+MATCH (i1:Individu {Id:ID_1})
+MATCH (i2:Individu {Id:ID_2})
+MERGE (i1)-[rel:FAMILIA{Relacio:Relacio,Relacio_Harmonitzada:Relacio_Harmonitzada}]-(i2);
