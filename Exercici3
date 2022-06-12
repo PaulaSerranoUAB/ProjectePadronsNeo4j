@@ -1,3 +1,19 @@
+Exercici 3. En aquest exercici analitzarem les dades del graf per entendre millor l’estructura de les dades. Els següents apartats tenen com objectiu orientar-vos respecte a com utilitzar algunes de les eines que ofereix Neo4J.
+
+a) Estudi de les components connexes (cc) i de l’estructura de les component en funció de la seva mida. A continuació us indiquem algunes consultes que podeu fer per explorar les dades:
+- Taula agrupant els resultats segons la mida de la cc.
+
+CALL gds.wcc.stream('3a1')
+YIELD componentId, nodeId
+WITH componentId, collect(nodeId)
+AS nodes, size(collect(nodeId)) AS mida
+ORDER BY mida DESC
+RETURN collect(componentId) AS Components, mida AS Mida
+
+
+Aquestes consultes són només una orientació del tipus d’exploració de dades que podeu fer. Tant si feu aquestes com d’altres, heu d’acompanyar-les d’una motivació (que preteneu saber amb la consulta) i d’una explicació dels resultats.
+Acompanyeu aquesta explicació amb el codi de la consulta i el resultat obtingut. (Indicació: utilitzeu la funció wcc en mode ‘stream’)
+
 CALL gds.wcc.stream('3a')
 YIELD componentId, nodeId
 WITH componentId, collect(nodeId) AS nodes, size(collect(nodeId)) AS mida
@@ -12,18 +28,19 @@ RETURN Any_Padro, llista_fills[0] AS Fills
 ORDER BY Any_Padro
 
 
+b) Semblança entre els nodes. Ens interessa saber quins nodes són semblants com a pas previ a identificar els individus que són el mateix (i unirem amb una aresta de tipus SAME_AS). Abans de fer aquest anàlisi:
 
-
-
-
-
+- Determineu els habitatges que són els mateixos al llarg dels anys. Afegiu una aresta amb nom “MATEIX_HAB“ entre aquests habitatges. Per evitar arestes duplicades feu que la aresta apunti al habitatge amb any de padró més petit.
 
 MATCH (h1:Habitatge),(h2:Habitatge)
 WHERE h1.Carrer = h2.Carrer AND h1.Municipi = h2.Municipi AND h1.Numero = h2.Numero AND h1.Id_Llar <> h2.Id_Llar AND h1.Any_Padro> h2.Any_Padro
 MERGE (h1)-[rel:MATEIX_HAB]->(h2)
 RETURN rel, h1, h2
 
+- Creeu un graf en memòria que inclogui els nodes Individu i Habitatge i les relacions VIU, FAMILIA, MATEIX_HAB que acabeu de crear.
+
 CALL gds.graph.create('subgraph_mateix_habitatge',["Habitatge","Individu"],["VIU","MATEIX_HAB","FAMILIA"])
 
+- Calculeu la similaritat entre els nodes del graf que acabeu de crear, escriviu el resultat de nou a la base de dades i interpreteu els resultats obtinguts
 CALL gds.nodeSimilarity.mutate('subgraph_mateix_habitatge',{mutateRelationshipType:"SIMILAR",mutateProperty:"score"})
 YIELD nodesCompared, relationshipsWritten
